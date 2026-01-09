@@ -1,0 +1,9 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+recursive-include examples *.json
+include opcua_data_diode/gui/red.png
+include opcua_data_diode/gui/green.png
+global-exclude __pycache__
+global-exclude *.py[cod]

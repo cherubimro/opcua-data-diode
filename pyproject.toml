@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opcua-data-diode"
+version = "1.0.0"
+authors = [
+    {name = "Alin-Adrian Anton", email = "alin.anton@upt.ro"},
+]
+description = "Secure one-way data replication for OPC UA servers using UDP over hardware data diodes"
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["opcua", "data-diode", "security", "scada", "ot", "industrial", "cybersecurity"]
+license = {text = "GPL-3.0-or-later"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Manufacturing",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "asyncua>=1.1.5",
+    "lz4",
+    "cryptography",
+    "Pillow",
+    "pyperclip",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "mypy",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/opcua-data-diode"
+Documentation = "https://github.com/yourusername/opcua-data-diode/tree/main/docs"
+Repository = "https://github.com/yourusername/opcua-data-diode"
+Issues = "https://github.com/yourusername/opcua-data-diode/issues"
+
+[project.scripts]
+opcua-sender = "opcua_data_diode.cli.sender_auto:main"
+opcua-receiver = "opcua_data_diode.cli.receiver_auto:main"
+opcua-sender-gui = "opcua_data_diode.gui.sender_gui:main"
+opcua-receiver-gui = "opcua_data_diode.gui.receiver_gui:main"
+opcua-sender-tui = "opcua_data_diode.gui.sender_gui_ncurses:main"
+opcua-receiver-tui = "opcua_data_diode.gui.receiver_gui_ncurses:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+packages = ["opcua_data_diode", "opcua_data_diode.cli", "opcua_data_diode.gui"]
+
+[tool.setuptools.package-data]
+opcua_data_diode = ["*.png", "*.json"]
+
+[tool.black]
+line-length = 100
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=opcua_data_diode --cov-report=html --cov-report=term"
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

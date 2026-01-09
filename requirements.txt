@@ -1,0 +1,28 @@
+# Python Package Dependencies (install via pip)
+asyncua==1.1.5     # OPC UA client library
+lz4                # Fast compression algorithm
+cryptography       # Encryption support (AES-GCM, ChaCha20)
+Pillow             # Image support for GUI status indicators (red.png/green.png)
+pyperclip          # Clipboard support for automatic encryption key copying
+
+# System Dependencies (install via system package manager)
+# These cannot be installed via pip and must be installed separately:
+#
+# For Graphical GUI support (sender_gui.py, receiver_gui.py):
+#   - openSUSE/SLES: sudo zypper install python311-tk
+#   - Debian/Ubuntu:  sudo apt install python3-tk
+#   - RHEL/CentOS:    sudo yum install python3-tkinter
+#   - Arch Linux:     sudo pacman -S tk
+#   - macOS:          Usually bundled with Python
+#   - Windows:        Usually bundled with Python
+#
+#   To verify tkinter is installed:
+#   python3 -m tkinter
+#
+# For Terminal GUI support (sender_gui_ncurses.py, receiver_gui_ncurses.py):
+#   - ncurses is usually pre-installed on Linux/macOS
+#   - Windows: Install windows-curses via pip (pip install windows-curses)
+#
+# For clipboard support on Linux (pyperclip requirement):
+#   - Install xclip or xsel: sudo apt install xclip
+#   - Or use wayland: sudo apt install wl-clipboard
