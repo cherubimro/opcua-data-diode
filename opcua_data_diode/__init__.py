@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__ = "Alin-Adrian Anton"
 __email__ = "alin.anton@upt.ro"
 __license__ = "GPL-3.0-or-later"

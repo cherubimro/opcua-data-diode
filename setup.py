@@ -18,7 +18,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="opcua-data-diode",
-    version="1.0.2",
+    version="1.0.3",
     author="Alin-Adrian Anton",
     author_email="alin.anton@upt.ro",
     description="Secure one-way data replication for OPC UA servers using UDP over hardware data diodes",
