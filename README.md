@@ -93,31 +93,33 @@ python3 -m opcua_data_diode.gui.sender_gui
 
 ### Running
 
+> **⚠️ IMPORTANT:** Always start the **RECEIVER** first, then the **SENDER**. The sender requires the receiver to be running before it can establish the connection.
+
 **Graphical Interface (Tkinter):**
 ```bash
-# Sender
-python3 -m opcua_data_diode.gui.sender_gui
+# 1. Start RECEIVER first
+opcua-receiver-gui
 
-# Receiver
-python3 -m opcua_data_diode.gui.receiver_gui
+# 2. Then start SENDER
+opcua-sender-gui
 ```
 
 **Terminal Interface (ncurses):**
 ```bash
-# Sender
-python3 -m opcua_data_diode.gui.sender_gui_ncurses
+# 1. Start RECEIVER first
+opcua-receiver-tui
 
-# Receiver
-python3 -m opcua_data_diode.gui.receiver_gui_ncurses
+# 2. Then start SENDER
+opcua-sender-tui
 ```
 
 **Command Line (headless):**
 ```bash
-# Sender
-python3 -m opcua_data_diode.cli.sender_auto sender_config.json
+# 1. Start RECEIVER first
+opcua-receiver receiver_config.json
 
-# Receiver
-python3 -m opcua_data_diode.cli.receiver_auto receiver_config.json
+# 2. Then start SENDER
+opcua-sender sender_config.json
 ```
 
 ## GUI Features

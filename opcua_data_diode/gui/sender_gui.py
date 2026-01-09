@@ -52,9 +52,14 @@ class SenderGUI:
     def load_status_images(self):
         """Load and resize red/green status indicator images"""
         try:
+            # Get the directory where this script is located
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            red_path = os.path.join(script_dir, 'red.png')
+            green_path = os.path.join(script_dir, 'green.png')
+
             # Load images and resize to 40x40
-            red_img = Image.open('red.png').resize((40, 40), Image.LANCZOS)
-            green_img = Image.open('green.png').resize((40, 40), Image.LANCZOS)
+            red_img = Image.open(red_path).resize((40, 40), Image.LANCZOS)
+            green_img = Image.open(green_path).resize((40, 40), Image.LANCZOS)
 
             # Convert to PhotoImage
             self.red_image = ImageTk.PhotoImage(red_img)
@@ -80,7 +85,7 @@ class SenderGUI:
     def get_default_config(self):
         """Return default configuration"""
         return {
-            "opcua_server_url": "opc.tcp://localhost:4840",
+            "opcua_server_url": "opc.tcp://192.168.0.1:53530/OPCUA/Server",
             "udp_host": "127.0.0.1",
             "udp_port": 5555,
             "subscription_interval": 100,
@@ -146,81 +151,89 @@ class SenderGUI:
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Server settings
-        ttk.Label(scrollable_frame, text="OPC UA Server Settings", font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=10)
+        # IMPORTANT WARNING at the top
+        warning_frame = ttk.Frame(scrollable_frame, relief=tk.RIDGE, borderwidth=2)
+        warning_frame.grid(row=0, column=0, columnspan=2, sticky=tk.EW, padx=5, pady=10)
+        ttk.Label(warning_frame, text="⚠ IMPORTANT: Start RECEIVER first! ⚠",
+                 font=('Arial', 14, 'bold'), foreground='red').pack(pady=10)
+        ttk.Label(warning_frame, text="The sender requires the receiver to be running before it can start.",
+                 font=('Arial', 10), foreground='dark red').pack(pady=(0, 10))
 
-        ttk.Label(scrollable_frame, text="Server URL:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
+        # Server settings
+        ttk.Label(scrollable_frame, text="OPC UA Server Settings", font=('Arial', 12, 'bold')).grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=10)
+
+        ttk.Label(scrollable_frame, text="Server URL:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=2)
         self.opcua_url_var = tk.StringVar(value=self.config.get('opcua_server_url', ''))
-        ttk.Entry(scrollable_frame, textvariable=self.opcua_url_var, width=50).grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Entry(scrollable_frame, textvariable=self.opcua_url_var, width=50).grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
 
         # UDP settings
-        ttk.Label(scrollable_frame, text="UDP Settings", font=('Arial', 12, 'bold')).grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=10)
+        ttk.Label(scrollable_frame, text="UDP Settings", font=('Arial', 12, 'bold')).grid(row=3, column=0, columnspan=2, sticky=tk.W, pady=10)
 
-        ttk.Label(scrollable_frame, text="UDP Host:").grid(row=3, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="UDP Host:").grid(row=4, column=0, sticky=tk.W, padx=5, pady=2)
         self.udp_host_var = tk.StringVar(value=self.config.get('udp_host', ''))
-        ttk.Entry(scrollable_frame, textvariable=self.udp_host_var, width=50).grid(row=3, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Entry(scrollable_frame, textvariable=self.udp_host_var, width=50).grid(row=4, column=1, sticky=tk.W, padx=5, pady=2)
 
-        ttk.Label(scrollable_frame, text="UDP Port:").grid(row=4, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="UDP Port:").grid(row=5, column=0, sticky=tk.W, padx=5, pady=2)
         self.udp_port_var = tk.IntVar(value=self.config.get('udp_port', 5555))
-        ttk.Entry(scrollable_frame, textvariable=self.udp_port_var, width=50).grid(row=4, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Entry(scrollable_frame, textvariable=self.udp_port_var, width=50).grid(row=5, column=1, sticky=tk.W, padx=5, pady=2)
 
         # Subscription settings
-        ttk.Label(scrollable_frame, text="Subscription Settings", font=('Arial', 12, 'bold')).grid(row=5, column=0, columnspan=2, sticky=tk.W, pady=10)
+        ttk.Label(scrollable_frame, text="Subscription Settings", font=('Arial', 12, 'bold')).grid(row=6, column=0, columnspan=2, sticky=tk.W, pady=10)
 
-        ttk.Label(scrollable_frame, text="Subscription Interval (ms):").grid(row=6, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="Subscription Interval (ms):").grid(row=7, column=0, sticky=tk.W, padx=5, pady=2)
         self.sub_interval_var = tk.IntVar(value=self.config.get('subscription_interval', 100))
-        ttk.Entry(scrollable_frame, textvariable=self.sub_interval_var, width=50).grid(row=6, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Entry(scrollable_frame, textvariable=self.sub_interval_var, width=50).grid(row=7, column=1, sticky=tk.W, padx=5, pady=2)
 
-        ttk.Label(scrollable_frame, text="Structure Check Interval (s):").grid(row=7, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="Structure Check Interval (s):").grid(row=8, column=0, sticky=tk.W, padx=5, pady=2)
         self.struct_interval_var = tk.IntVar(value=self.config.get('structure_check_interval', 30))
-        ttk.Entry(scrollable_frame, textvariable=self.struct_interval_var, width=50).grid(row=7, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Entry(scrollable_frame, textvariable=self.struct_interval_var, width=50).grid(row=8, column=1, sticky=tk.W, padx=5, pady=2)
 
         # Compression settings
-        ttk.Label(scrollable_frame, text="Compression Settings", font=('Arial', 12, 'bold')).grid(row=8, column=0, columnspan=2, sticky=tk.W, pady=10)
+        ttk.Label(scrollable_frame, text="Compression Settings", font=('Arial', 12, 'bold')).grid(row=9, column=0, columnspan=2, sticky=tk.W, pady=10)
 
         self.compress_enabled_var = tk.BooleanVar(value=self.config.get('compression', {}).get('enabled', False))
-        ttk.Checkbutton(scrollable_frame, text="Enable Compression", variable=self.compress_enabled_var).grid(row=9, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
+        ttk.Checkbutton(scrollable_frame, text="Enable Compression", variable=self.compress_enabled_var).grid(row=10, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
 
-        ttk.Label(scrollable_frame, text="Method:").grid(row=10, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="Method:").grid(row=11, column=0, sticky=tk.W, padx=5, pady=2)
         self.compress_method_var = tk.StringVar(value=self.config.get('compression', {}).get('method', 'zlib'))
         compress_combo = ttk.Combobox(scrollable_frame, textvariable=self.compress_method_var,
                                        values=['zlib', 'lz4'],
                                        state='readonly', width=47)
-        compress_combo.grid(row=10, column=1, sticky=tk.W, padx=5, pady=2)
+        compress_combo.grid(row=11, column=1, sticky=tk.W, padx=5, pady=2)
         ttk.Label(scrollable_frame, text="Available: zlib (standard, good ratio), lz4 (faster, lower ratio)",
-                 foreground='gray', font=('Arial', 8)).grid(row=10, column=1, sticky=tk.W, padx=5, pady=(25, 0))
+                 foreground='gray', font=('Arial', 8)).grid(row=11, column=1, sticky=tk.W, padx=5, pady=(25, 0))
 
         # Encryption settings
-        ttk.Label(scrollable_frame, text="Encryption Settings", font=('Arial', 12, 'bold')).grid(row=11, column=0, columnspan=2, sticky=tk.W, pady=10)
+        ttk.Label(scrollable_frame, text="Encryption Settings", font=('Arial', 12, 'bold')).grid(row=12, column=0, columnspan=2, sticky=tk.W, pady=10)
 
         self.encrypt_enabled_var = tk.BooleanVar(value=self.config.get('encryption', {}).get('enabled', False))
-        ttk.Checkbutton(scrollable_frame, text="Enable Encryption", variable=self.encrypt_enabled_var).grid(row=12, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
+        ttk.Checkbutton(scrollable_frame, text="Enable Encryption", variable=self.encrypt_enabled_var).grid(row=13, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
 
-        ttk.Label(scrollable_frame, text="Algorithm:").grid(row=13, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="Algorithm:").grid(row=14, column=0, sticky=tk.W, padx=5, pady=2)
         self.encrypt_algo_var = tk.StringVar(value=self.config.get('encryption', {}).get('algorithm', 'aes-256-gcm'))
         algo_combo = ttk.Combobox(scrollable_frame, textvariable=self.encrypt_algo_var,
                                    values=['aes-128-gcm', 'aes-256-gcm', 'chacha20-poly1305'],
                                    state='readonly', width=47)
-        algo_combo.grid(row=13, column=1, sticky=tk.W, padx=5, pady=2)
+        algo_combo.grid(row=14, column=1, sticky=tk.W, padx=5, pady=2)
         ttk.Label(scrollable_frame, text="Available: aes-128-gcm (fast), aes-256-gcm (recommended), chacha20-poly1305 (fastest)",
-                 foreground='gray', font=('Arial', 8)).grid(row=13, column=1, sticky=tk.W, padx=5, pady=(25, 0))
+                 foreground='gray', font=('Arial', 8)).grid(row=14, column=1, sticky=tk.W, padx=5, pady=(25, 0))
 
-        ttk.Label(scrollable_frame, text="Encryption Key:").grid(row=14, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(scrollable_frame, text="Encryption Key:").grid(row=15, column=0, sticky=tk.W, padx=5, pady=2)
         self.encrypt_key_var = tk.StringVar(value=self.config.get('encryption', {}).get('key', ''))
         self.key_entry = ttk.Entry(scrollable_frame, textvariable=self.encrypt_key_var, width=50, show="*")
-        self.key_entry.grid(row=14, column=1, sticky=tk.W, padx=5, pady=2)
+        self.key_entry.grid(row=15, column=1, sticky=tk.W, padx=5, pady=2)
 
         key_buttons_frame = ttk.Frame(scrollable_frame)
-        key_buttons_frame.grid(row=15, column=1, sticky=tk.W, padx=5, pady=2)
+        key_buttons_frame.grid(row=16, column=1, sticky=tk.W, padx=5, pady=2)
         ttk.Button(key_buttons_frame, text="Generate New Key", command=self.generate_key).pack(side=tk.LEFT, padx=(0, 5))
         self.show_key_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(key_buttons_frame, text="Show Key", variable=self.show_key_var, command=self.toggle_key_visibility).pack(side=tk.LEFT)
 
         # Visual status indicator
-        ttk.Label(scrollable_frame, text="Status Indicator:", font=('Arial', 12, 'bold')).grid(row=16, column=0, columnspan=2, sticky=tk.W, pady=(20, 10))
+        ttk.Label(scrollable_frame, text="Status Indicator:", font=('Arial', 12, 'bold')).grid(row=17, column=0, columnspan=2, sticky=tk.W, pady=(20, 10))
 
         indicator_frame = ttk.Frame(scrollable_frame)
-        indicator_frame.grid(row=17, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
+        indicator_frame.grid(row=18, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
 
         # Status indicator using image
         if self.red_image and self.green_image:
@@ -466,7 +479,7 @@ See the GNU General Public License for more details:"""
             self.log_file = log_file
 
             self.process = subprocess.Popen(
-                [sys.executable, 'sender_auto.py', self.config_file],
+                ['opcua-sender', self.config_file],
                 stdout=log_file,
                 stderr=subprocess.STDOUT
             )

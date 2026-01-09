@@ -879,9 +879,16 @@ class AutoShadowServer:
             self.udp_socket.close()
 
 
-async def main():
-    """Main receiver function"""
+async def async_main():
+    """Async main receiver function"""
     import sys
+
+    # Handle --version flag
+    if len(sys.argv) > 1 and sys.argv[1] in ('--version', '-v'):
+        from opcua_data_diode import __version__
+        print(f"opcua-receiver version {__version__}")
+        return
+
     config_file = sys.argv[1] if len(sys.argv) > 1 else 'receiver_config.json'
 
     with open(config_file, 'r') as f:
@@ -913,5 +920,10 @@ async def main():
         logger.info("Receiver stopped")
 
 
+def main():
+    """Entry point for console script"""
+    asyncio.run(async_main())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

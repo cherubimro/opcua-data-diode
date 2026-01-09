@@ -46,9 +46,14 @@ class ReceiverGUI:
     def load_status_images(self):
         """Load and resize red/green status indicator images"""
         try:
+            # Get the directory where this script is located
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            red_path = os.path.join(script_dir, 'red.png')
+            green_path = os.path.join(script_dir, 'green.png')
+
             # Load images and resize to 40x40
-            red_img = Image.open('red.png').resize((40, 40), Image.LANCZOS)
-            green_img = Image.open('green.png').resize((40, 40), Image.LANCZOS)
+            red_img = Image.open(red_path).resize((40, 40), Image.LANCZOS)
+            green_img = Image.open(green_path).resize((40, 40), Image.LANCZOS)
 
             # Convert to PhotoImage
             self.red_image = ImageTk.PhotoImage(red_img)
@@ -161,7 +166,7 @@ class ReceiverGUI:
         ttk.Entry(scrollable_frame, textvariable=self.shadow_name_var, width=50).grid(row=5, column=1, sticky=tk.W, padx=5, pady=2)
 
         # Display Shadow Server URL
-        shadow_url = f"opc.tcp://{self.config.get('udp_host', '0.0.0.0')}:{self.config.get('shadow_server_port', 4841)}"
+        shadow_url = f"opc.tcp://{self.config.get('udp_host', '0.0.0.0')}:{self.config.get('shadow_server_port', 4841)}/shadow"
         ttk.Label(scrollable_frame, text="Shadow Server URL:", font=('Arial', 10, 'bold')).grid(row=6, column=0, sticky=tk.W, padx=5, pady=2)
         self.shadow_url_label = ttk.Label(scrollable_frame, text=shadow_url, foreground='blue', font=('Arial', 9))
         self.shadow_url_label.grid(row=6, column=1, sticky=tk.W, padx=5, pady=2)
@@ -399,7 +404,7 @@ See the GNU General Public License for more details:"""
             self.log_file = log_file
 
             self.process = subprocess.Popen(
-                [sys.executable, 'receiver_auto.py', self.config_file],
+                ['opcua-receiver', self.config_file],
                 stdout=log_file,
                 stderr=subprocess.STDOUT
             )

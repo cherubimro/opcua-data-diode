@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opcua-data-diode"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
     {name = "Alin-Adrian Anton", email = "alin.anton@upt.ro"},
 ]
@@ -42,10 +42,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/opcua-data-diode"
-Documentation = "https://github.com/yourusername/opcua-data-diode/tree/main/docs"
-Repository = "https://github.com/yourusername/opcua-data-diode"
-Issues = "https://github.com/yourusername/opcua-data-diode/issues"
+Homepage = "https://github.com/cherubimro/opcua-data-diode"
+Documentation = "https://github.com/cherubimro/opcua-data-diode/tree/main/docs"
+Repository = "https://github.com/cherubimro/opcua-data-diode"
+Issues = "https://github.com/cherubimro/opcua-data-diode/issues"
 
 [project.scripts]
 opcua-sender = "opcua_data_diode.cli.sender_auto:main"
@@ -60,7 +60,7 @@ package-dir = {"" = "."}
 packages = ["opcua_data_diode", "opcua_data_diode.cli", "opcua_data_diode.gui"]
 
 [tool.setuptools.package-data]
-opcua_data_diode = ["*.png", "*.json"]
+"opcua_data_diode.gui" = ["*.png"]
 
 [tool.black]
 line-length = 100

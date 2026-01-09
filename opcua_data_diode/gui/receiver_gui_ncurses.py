@@ -34,6 +34,7 @@ class ReceiverGUINCurses:
         self.log_file = None
         self.current_tab = 0  # 0=Config, 1=About
         self.current_field = 0
+        self.scroll_offset = 0  # For scrolling in config tab
         self.status_message = ""
         self.edit_mode = False
 
@@ -92,7 +93,7 @@ class ReceiverGUINCurses:
             self.log_file = log_file
 
             self.process = subprocess.Popen(
-                [sys.executable, 'receiver_auto.py', self.config_file],
+                ['opcua-receiver', self.config_file],
                 stdout=log_file,
                 stderr=subprocess.STDOUT
             )
@@ -160,17 +161,24 @@ class ReceiverGUINCurses:
         self.stdscr.addstr(height - 2, 0, "─" * width)
 
         # Key help
-        help_text = "S:Start X:Stop F3:Save F4:Reload TAB/←→:Switch Q/ESC:Quit"
+        help_text = "S:Start X:Stop F3:Save F4:Reload TAB/←→:Switch PgUp/PgDn:Scroll Q/ESC:Quit"
         self.stdscr.addstr(height - 1, 2, help_text[:width-4])
 
     def draw_config_tab(self):
-        """Draw configuration tab"""
+        """Draw configuration tab with scrolling support"""
         height, width = self.stdscr.getmaxyx()
         y = 4
         x = 2
 
         # Calculate shadow server URL
-        shadow_url = f"opc.tcp://{self.config.get('udp_host', '0.0.0.0')}:{self.config.get('shadow_server_port', 4841)}"
+        shadow_url = f"opc.tcp://{self.config.get('udp_host', '0.0.0.0')}:{self.config.get('shadow_server_port', 4841)}/shadow"
+
+        # Get encryption key with placeholder for empty value
+        enc_key = self.config.get('encryption', {}).get('key', '')
+        if enc_key:
+            enc_key_display = enc_key[:40] + "..." if len(enc_key) > 40 else enc_key
+        else:
+            enc_key_display = "(empty - press ENTER to edit)"
 
         config_items = [
             ("UDP Listen Host", self.config.get('udp_host', '')),
@@ -180,12 +188,26 @@ class ReceiverGUINCurses:
             ("Shadow Server URL", shadow_url),
             ("Encryption Enabled", "Yes" if self.config.get('encryption', {}).get('enabled', False) else "No"),
             ("Encryption Algorithm", self.config.get('encryption', {}).get('algorithm', 'aes-256-gcm') + " (available: aes-128/256-gcm, chacha20)"),
-            ("Encryption Key", self.config.get('encryption', {}).get('key', '')[:40] + "..." if len(self.config.get('encryption', {}).get('key', '')) > 40 else self.config.get('encryption', {}).get('key', '')),
+            ("Encryption Key", enc_key_display),
         ]
 
-        for i, (label, value) in enumerate(config_items):
-            if y >= height - 5:
-                break
+        # Calculate how many fields can fit on screen (each field takes 3 lines)
+        available_height = height - 9  # Leave room for header and footer
+        visible_fields = max(1, available_height // 3)
+
+        # Adjust scroll offset to ensure current field is visible
+        if self.current_field < self.scroll_offset:
+            self.scroll_offset = self.current_field
+        elif self.current_field >= self.scroll_offset + visible_fields:
+            self.scroll_offset = self.current_field - visible_fields + 1
+
+        # Clamp scroll offset
+        max_scroll = max(0, len(config_items) - visible_fields)
+        self.scroll_offset = max(0, min(self.scroll_offset, max_scroll))
+
+        # Draw visible fields
+        for i in range(self.scroll_offset, min(len(config_items), self.scroll_offset + visible_fields)):
+            label, value = config_items[i]
 
             # Highlight current field
             attr = curses.color_pair(5) if i == self.current_field and self.current_tab == 0 else curses.A_NORMAL
@@ -193,6 +215,11 @@ class ReceiverGUINCurses:
             self.stdscr.addstr(y, x, f"{label}:", curses.color_pair(3) | curses.A_BOLD)
             self.stdscr.addstr(y + 1, x + 2, str(value)[:width-x-4], attr)
             y += 3
+
+        # Show scroll indicator if needed
+        if len(config_items) > visible_fields:
+            scroll_info = f"[{self.scroll_offset + 1}-{min(self.scroll_offset + visible_fields, len(config_items))}/{len(config_items)}]"
+            self.stdscr.addstr(height - 4, width - len(scroll_info) - 2, scroll_info, curses.color_pair(6))
 
     def draw_about_tab(self):
         """Draw about tab"""
@@ -462,6 +489,14 @@ class ReceiverGUINCurses:
         elif key == curses.KEY_DOWN:
             if self.current_tab == 0:
                 self.current_field = (self.current_field + 1) % 8  # Wrap around (now 8 fields)
+        elif key == curses.KEY_PPAGE:  # Page Up
+            if self.current_tab == 0:
+                self.current_field = max(0, self.current_field - 3)
+                self.scroll_offset = max(0, self.scroll_offset - 3)
+        elif key == curses.KEY_NPAGE:  # Page Down
+            if self.current_tab == 0:
+                self.current_field = min(7, self.current_field + 3)
+                self.scroll_offset = min(self.scroll_offset + 3, max(0, 8 - 1))
         elif key == ord('\n') or key == curses.KEY_ENTER or key == 10:
             if self.current_tab == 0:
                 self.edit_field(self.current_field)
@@ -485,9 +520,14 @@ class ReceiverGUINCurses:
             if self.is_running():
                 self.stop_receiver()
 
-def main(stdscr):
+def curses_main(stdscr):
+    """Curses wrapper function"""
     app = ReceiverGUINCurses(stdscr)
     app.run()
 
+def main():
+    """Entry point for console script"""
+    curses.wrapper(curses_main)
+
 if __name__ == "__main__":
-    curses.wrapper(main)
+    main()

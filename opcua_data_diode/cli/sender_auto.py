@@ -843,17 +843,35 @@ class DataChangeHandler:
             logger.error(f"Error in datachange_notification: {e}")
 
 
-async def main():
-    """Main function"""
+async def async_main():
+    """Async main function"""
     import sys
+
+    # Handle --version flag
+    if len(sys.argv) > 1 and sys.argv[1] in ('--version', '-v'):
+        from opcua_data_diode import __version__
+        print(f"opcua-sender version {__version__}")
+        return
+
     config_file = sys.argv[1] if len(sys.argv) > 1 else 'sender_config.json'
 
     with open(config_file, 'r') as f:
         config = json.load(f)
 
+    # Important warning
+    logger.warning("=" * 70)
+    logger.warning("⚠️  IMPORTANT: Make sure the RECEIVER is running FIRST!")
+    logger.warning("   The sender requires the receiver to be active before starting.")
+    logger.warning("=" * 70)
+
     sender = AutoDiscoverySender(config)
     await sender.run()
 
 
+def main():
+    """Entry point for console script"""
+    asyncio.run(async_main())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
