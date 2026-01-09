@@ -176,7 +176,7 @@ class SenderGUINCurses:
 
         # IMPORTANT WARNING - only show in Config tab
         if self.current_tab == 0:
-            warning = "⚠ IMPORTANT: Start RECEIVER first! ⚠"
+            warning = "⚠ IMPORTANT: Start RECEIVER and OPC UA Server first! ⚠"
             self.stdscr.addstr(3, (width - len(warning)) // 2, warning,
                               curses.color_pair(1) | curses.A_BOLD | curses.A_REVERSE)
 

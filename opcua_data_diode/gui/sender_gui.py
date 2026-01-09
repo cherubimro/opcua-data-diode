@@ -154,9 +154,9 @@ class SenderGUI:
         # IMPORTANT WARNING at the top
         warning_frame = ttk.Frame(scrollable_frame, relief=tk.RIDGE, borderwidth=2)
         warning_frame.grid(row=0, column=0, columnspan=2, sticky=tk.EW, padx=5, pady=10)
-        ttk.Label(warning_frame, text="⚠ IMPORTANT: Start RECEIVER first! ⚠",
+        ttk.Label(warning_frame, text="⚠ IMPORTANT: Start RECEIVER and OPC UA Server first! ⚠",
                  font=('Arial', 14, 'bold'), foreground='red').pack(pady=10)
-        ttk.Label(warning_frame, text="The sender requires the receiver to be running before it can start.",
+        ttk.Label(warning_frame, text="The sender requires both the receiver and the real OPC UA server to be running.",
                  font=('Arial', 10), foreground='dark red').pack(pady=(0, 10))
 
         # Server settings

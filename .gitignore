@@ -131,6 +131,7 @@ discovery_statistics.txt
 skip_statistics.txt
 *.png
 !docs/images/*.png
+!opcua_data_diode/gui/*.png
 
 # IDE
 .vscode/

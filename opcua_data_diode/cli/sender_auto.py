@@ -860,8 +860,8 @@ async def async_main():
 
     # Important warning
     logger.warning("=" * 70)
-    logger.warning("⚠️  IMPORTANT: Make sure the RECEIVER is running FIRST!")
-    logger.warning("   The sender requires the receiver to be active before starting.")
+    logger.warning("⚠️  IMPORTANT: Make sure the RECEIVER and real OPC UA Server are running FIRST!")
+    logger.warning("   The sender requires both the receiver and the real OPC UA server to be active before starting.")
     logger.warning("=" * 70)
 
     sender = AutoDiscoverySender(config)

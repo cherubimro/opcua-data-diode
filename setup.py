@@ -84,6 +84,9 @@ setup(
             "opcua-receiver-tui=opcua_data_diode.gui.receiver_gui_ncurses:main",
         ],
     },
+    package_data={
+        "opcua_data_diode.gui": ["*.png"],
+    },
     include_package_data=True,
     zip_safe=False,
     license="GPLv3",

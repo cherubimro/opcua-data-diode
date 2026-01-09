@@ -93,7 +93,7 @@ python3 -m opcua_data_diode.gui.sender_gui
 
 ### Running
 
-> **⚠️ IMPORTANT:** Always start the **RECEIVER** first, then the **SENDER**. The sender requires the receiver to be running before it can establish the connection.
+> **⚠️ IMPORTANT:** Always start the **RECEIVER** and the **real OPC UA Server** first, then start the **SENDER**. The sender requires both the receiver and the real OPC UA server to be running before it can establish the connection.
 
 **Graphical Interface (Tkinter):**
 ```bash
