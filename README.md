@@ -179,20 +179,23 @@ The system generates detailed statistics files:
 
 ### Hardware Data Diode (Optional)
 Compatible with commercial data diodes from:
-- Owl Cyber Defense
-- Waterfall Security Solutions
-- BAE Systems
-- Fox-IT DataDiode
 - Any unidirectional network device supporting UDP
 
 ## Performance
 
-Tested with:
-- **2427 nodes** discovered and mirrored
+Tested with Prosys OPC UA Simulation Server (2443 nodes, 2023 variables):
 - **~100ms** subscription interval
-- **<5% CPU** usage on modern hardware
-- **~1-2 MB/s** bandwidth (uncompressed)
-- **~300-600 KB/s** bandwidth (with lz4 compression)
+- **<5% CPU** usage on modern hardware (typical)
+- **Bandwidth** (varies with data change rate and compression):
+  - **~10-25 KB/s** with zlib compression (level 6, **default**)
+  - **~15-30 KB/s** with lz4 compression (faster, optional)
+  - Uncompressed bandwidth depends on data change frequency and payload size
+
+**Note:** Actual bandwidth depends heavily on:
+- Number of variables changing simultaneously
+- Data change frequency (subscription interval)
+- Variable data types and array sizes
+- Network conditions and compression settings
 
 ## License
 
